@@ -29,7 +29,7 @@ class AnarchyQueue:
     def get( self ):
         ret = None
         try:
-            ret = self.queue.get_nowait()
+            ret = self.queue.get()
         except Empty:
             logging.info( "AnarchyQueue is empty." )
         except Exception:

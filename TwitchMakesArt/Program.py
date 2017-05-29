@@ -1,6 +1,8 @@
 import win32api, win32con
 import logging
 
+from threading import Thread
+
 from BoundingBox import *
 from AnarchyQueue import *
 
@@ -41,24 +43,21 @@ def main():
     logging.basicConfig( filename = "logs\\twitchmakesart.log", filemode = "w", level = logging.INFO, format = "%(asctime)s %(levelname)s: %(message)s" )
     logging.info( "Application started." )
 
+    
+    #
+    # THREADING
+    #
+    # We create a new thread dedicated to reading the Twitch chat and adding commands to the queue.
+    threadCommand = Thread( target = commandGetter, args=(queue,) )
+    threadCommand.daemon = True
+    threadCommand.start()
+
+
     #
     # MAIN LOOP
     #
     while True:
         mousePos = win32api.GetCursorPos()
-
-
-        # Get next input
-        c = input( "" )
-
-
-        # Filtering input
-        c.lower()
-        c = "".join( filter( str.isalpha, c ) )
-
-        queue.add( c )
-
-
 
         nextCommand = queue.get()
 
@@ -92,6 +91,20 @@ def main():
         
 
         win32api.SetCursorPos( mousePos )
+
+
+
+def commandGetter( q ):
+    logging.info( "Command getter thread started." )
+
+    # Get next input
+    c = input( "" )
+
+    # Filtering input
+    c.lower()
+    c = "".join( filter( str.isalpha, c ) )
+
+    q.add( c )
 
 
 if __name__ == "__main__":
