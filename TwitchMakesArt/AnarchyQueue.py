@@ -1,3 +1,5 @@
+import logging
+
 from queue import Queue, Empty
 from random import Random
 from builtins import Exception
@@ -21,16 +23,15 @@ class AnarchyQueue:
             try:
                 self.queue.put_nowait( command )
             except Exception:
-                #TODO logging
-                pass  
+                logging.exception( "AnarchyQueue.add()" )
             
 
     def get( self ):
         ret = None
         try:
             ret = self.queue.get_nowait()
+        except Empty:
+            logging.info( "AnarchyQueue is empty." )
         except Exception:
-            #TODO logging
-            pass
-
+            logging.exception( "AnarchyQueue.get()" )
         return ret

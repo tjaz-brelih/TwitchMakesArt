@@ -1,4 +1,6 @@
 import win32api, win32con
+import logging
+
 from BoundingBox import *
 from AnarchyQueue import *
 
@@ -32,6 +34,12 @@ def main():
     #
     queue = AnarchyQueue( 0.9 )
 
+
+    #
+    # LOGGING
+    #
+    logging.basicConfig( filename = "logs\\twitchmakesart.log", filemode = "w", level = logging.INFO, format = "%(asctime)s %(levelname)s: %(message)s" )
+    logging.info( "Application started." )
 
     #
     # MAIN LOOP
