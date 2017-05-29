@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>0fae483a-a596-4a55-b784-e4cd6547bb33</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>TwitchMakesArt.py</StartupFile>
+    <StartupFile>Program.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,7 +22,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="TwitchMakesArt.py" />
+    <Compile Include="BoundingBox.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Program.py" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
