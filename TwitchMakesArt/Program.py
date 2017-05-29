@@ -1,6 +1,6 @@
 import win32api, win32con
 from BoundingBox import *
-from functools import reduce
+from AnarchyQueue import *
 
 
 def main():
@@ -16,7 +16,7 @@ def main():
 
 
     #
-    # COMMADS
+    # COMMANDS
     #
     mouseMovement = 10
 
@@ -27,6 +27,10 @@ def main():
                  "click":   lambda x: win32api.mouse_event( win32con.MOUSEEVENTF_LEFTDOWN, x[0], x[1], 0, 0 ), \
                  "release": lambda x: win32api.mouse_event( win32con.MOUSEEVENTF_LEFTUP,   x[0], x[1], 0, 0 ) }
 
+    #
+    # OTHER
+    #
+    queue = AnarchyQueue( 0.9 )
 
 
     #
@@ -35,14 +39,26 @@ def main():
     while True:
         mousePos = win32api.GetCursorPos()
 
-        
+
+        # Get next input
         c = input( "" )
+
 
         # Filtering input
         c.lower()
         c = "".join( filter( str.isalpha, c ) )
 
-        func = commands.get( c )
+        queue.add( c )
+
+
+
+        nextCommand = queue.get()
+
+        # In this case the queue is empty
+        if nextCommand is None:
+            continue
+
+        func = commands.get( nextCommand )
         if func is not None:
             ret = func( mousePos )
 

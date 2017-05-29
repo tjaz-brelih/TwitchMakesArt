@@ -11,8 +11,9 @@ class BoundingBox:
         return mouse[0] >= self.left and mouse[0] <= self.right and mouse[1] >= self.top and mouse[1] <= self.bottom
 
 
-    """ Returns the closest position that is still in the box. """
     def closestInside( self, mousePos ):
+        """ Returns the closest position that is still in the box. """
+
         x = mousePos[0]
         y = mousePos[1]
 

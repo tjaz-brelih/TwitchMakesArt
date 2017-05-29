@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AnarchyQueue.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="BoundingBox.py">
       <SubType>Code</SubType>
     </Compile>
