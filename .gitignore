@@ -243,3 +243,7 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+
+# Python cache folder and files
+__pycache__/
+*.pyc
