@@ -28,6 +28,9 @@
     <Compile Include="BoundingBox.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IRCBot.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Program.py" />
   </ItemGroup>
   <PropertyGroup>

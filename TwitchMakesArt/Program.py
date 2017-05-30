@@ -5,6 +5,7 @@ from threading import Thread
 
 from BoundingBox import *
 from AnarchyQueue import *
+from IRCBot import *
 
 
 def main():
@@ -35,22 +36,22 @@ def main():
     # OTHER
     #
     queue = AnarchyQueue( 0.9 )
-
+        
 
     #
     # LOGGING
     #
     logging.basicConfig( filename = "logs\\twitchmakesart.log", filemode = "w", level = logging.INFO, format = "%(asctime)s %(levelname)s: %(message)s" )
     logging.info( "Application started." )
-
+    
     
     #
     # THREADING
     #
     # We create a new thread dedicated to reading the Twitch chat and adding commands to the queue.
-    threadCommand = Thread( target = commandGetter, args=(queue,) )
-    threadCommand.daemon = True
-    threadCommand.start()
+    threadIrc = Thread( target = ircTarget, args=(queue, commands) )
+    threadIrc.daemon = True
+    threadIrc.start()
 
 
     #
@@ -89,22 +90,26 @@ def main():
             if boxes[i].isMouseIn( mousePos ):
                 prevBox = i
         
-
         win32api.SetCursorPos( mousePos )
 
 
 
-def commandGetter( q ):
-    logging.info( "Command getter thread started." )
+# Worker function for IRC thread
+def ircTarget( q, c ):
+    logging.info( "IRC thread started." )
 
-    # Get next input
-    c = input( "" )
+    oauth = "oauth:sbjibtan4na5bulm0bxuflonrfko14"
 
-    # Filtering input
-    c.lower()
-    c = "".join( filter( str.isalpha, c ) )
+    bot = IRCBot( "#twitchmakesart_channel", q, c )
 
-    q.add( c )
+    try:
+        bot.connect( "irc.chat.twitch.tv", 6667, "twitchmakesart_channel", password = oauth )
+    except irc.client.ServerConnectionError:
+        logging.exception( "Connection to IRC server failed." )
+        sys.exit( 1 )
+
+    bot.start()
+
 
 
 if __name__ == "__main__":
