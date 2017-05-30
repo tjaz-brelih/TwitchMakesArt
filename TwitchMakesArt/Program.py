@@ -1,6 +1,11 @@
-import win32api, win32con
+import win32api, win32con, win32gui
 import logging
+import sqlite3
+import sys
+import atexit
 
+from time import sleep
+from datetime import datetime
 from threading import Thread
 
 from BoundingBox import *
@@ -36,22 +41,44 @@ def main():
     # OTHER
     #
     queue = AnarchyQueue( 0.9 )
+    today = datetime.today().strftime( "%Y-%m-%d" )
         
 
     #
     # LOGGING
     #
-    logging.basicConfig( filename = "logs\\twitchmakesart.log", filemode = "w", level = logging.INFO, format = "%(asctime)s %(levelname)s: %(message)s" )
+    logging.basicConfig( filename = "logs\\twitchmakesart_" + today + ".log", level = logging.INFO, format = "%(asctime)s %(levelname)s: %(message)s" )
     logging.info( "Application started." )
     
+
+    #
+    # DATABASE
+    #
+    # For storing users who sent valid commands.
+    db = sqlite3.connect( "logs\\users_" + today + ".db" )
+    cur = db.cursor()
+
+    try:
+        cur.execute( "CREATE TABLE users (username, command)" )
+        db.commit()
+    except sqlite3.OperationalError:
+        pass
+    except Exception:
+        logging.exception( "Exception while creating database table." )
+        sys.exit( 1 )
+
     
     #
     # THREADING
     #
     # We create a new thread dedicated to reading the Twitch chat and adding commands to the queue.
-    threadIrc = Thread( target = ircTarget, args=(queue, commands) )
+    threadIrc = Thread( target = ircTarget, args=(queue, commands, db) )
     threadIrc.daemon = True
     threadIrc.start()
+
+    threadPaint = Thread( target = paintTarget )
+    threadPaint.daemon = True
+    threadPaint.start()
 
 
     #
@@ -95,20 +122,35 @@ def main():
 
 
 # Worker function for IRC thread
-def ircTarget( q, c ):
+def ircTarget( q, c, db ):
     logging.info( "IRC thread started." )
 
     oauth = "oauth:sbjibtan4na5bulm0bxuflonrfko14"
 
-    bot = IRCBot( "#twitchmakesart_channel", q, c )
+    bot = IRCBot( "#twitchmakesart_channel", q, c, db )
 
     try:
         bot.connect( "irc.chat.twitch.tv", 6667, "twitchmakesart_channel", password = oauth )
     except irc.client.ServerConnectionError:
         logging.exception( "Connection to IRC server failed." )
+        db.close()
         sys.exit( 1 )
 
     bot.start()
+
+
+def paintTarget():
+    logging.info( "Paint thread started." )
+
+    paintHandle = win32gui.FindWindow( None, "Untitled - Paint" )
+
+    if paintHandle == 0:
+        logging.error( "Paint.exe doesn't seem to be running" )
+        thread
+
+    while True:
+        win32gui.SetForegroundWindow( paintHandle )
+        sleep( 1 )
 
 
 

@@ -3,12 +3,13 @@ import logging
 
 class IRCBot( irc.client.SimpleIRCClient ):
 
-    def __init__( self, channel, queue, commands ):
+    def __init__( self, channel, queue, commands, db ):
         irc.client.SimpleIRCClient.__init__( self )
 
         self.channel = channel
         self.queue = queue
         self.commands = commands
+        self.db = db
 
 
     def on_welcome( self, connection, event ):
@@ -31,6 +32,7 @@ class IRCBot( irc.client.SimpleIRCClient ):
         message = "".join( filter( str.isalpha, message ) )
 
         if self.commands.get( message ) is not None:
-            self.queue.add( message )
-
-        #TODO write user in database
+            if self.queue.add( message ):
+                cur = self.db.cursor()
+                cur.execute( "INSERT INTO users VALUES (?,?)", (user, message) )
+                self.db.commit()

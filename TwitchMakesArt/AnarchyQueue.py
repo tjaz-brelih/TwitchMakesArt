@@ -22,8 +22,12 @@ class AnarchyQueue:
         if self.random.uniform( 0, 1 ) <= self.p:
             try:
                 self.queue.put_nowait( command )
+                return True
+
             except Exception:
                 logging.exception( "AnarchyQueue.add()" )
+
+        return False
             
 
     def get( self ):
