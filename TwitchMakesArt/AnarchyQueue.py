@@ -23,9 +23,8 @@ class AnarchyQueue:
             try:
                 self.queue.put_nowait( command )
                 return True
-
             except Exception:
-                logging.exception( "AnarchyQueue.add()" )
+                logger.exception( "AnarchyQueue.add()" )
 
         return False
             
@@ -35,7 +34,7 @@ class AnarchyQueue:
         try:
             ret = self.queue.get()
         except Empty:
-            logging.info( "AnarchyQueue is empty." )
+            logger.info( "AnarchyQueue is empty." )
         except Exception:
-            logging.exception( "AnarchyQueue.get()" )
+            logger.exception( "AnarchyQueue.get()" )
         return ret
