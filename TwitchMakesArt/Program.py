@@ -1,16 +1,15 @@
 import win32api, win32con, win32gui
 import logging
 import sqlite3
-import sys
-import atexit
+import os
 
 from time import sleep
-from datetime import datetime
 from threading import Thread
+from datetime import datetime
 
+from IRCBot import *
 from BoundingBox import *
 from AnarchyQueue import *
-from IRCBot import *
 
 
 def main():
@@ -47,8 +46,22 @@ def main():
     #
     # LOGGING
     #
-    logging.basicConfig( filename = "logs\\twitchmakesart_" + today + ".log", level = logging.INFO, format = "%(asctime)s %(levelname)s: %(message)s" )
-    logging.info( "Application started." )
+    logger = logging.getLogger()
+    logger.setLevel( logging.DEBUG )
+
+    formatter = logging.Formatter( "%(asctime)s [%(levelname)s] %(message)s" )
+
+    fh = logging.FileHandler( "logs\\twitchmakesart_" + today + ".log" )
+    fh.setLevel( logging.INFO )
+    fh.setFormatter( formatter )
+    logger.addHandler( fh )
+
+    sh = logging.StreamHandler()
+    sh.setLevel( logging.INFO )
+    sh.setFormatter( formatter )
+    logger.addHandler( sh )
+
+    logger.info( "Application started." )
     
 
     #
@@ -64,7 +77,7 @@ def main():
     except sqlite3.OperationalError:
         pass
     except Exception:
-        logging.exception( "Exception while creating database table." )
+        logger.exception( "Exception while creating database table." )
         sys.exit( 1 )
 
     
@@ -85,13 +98,13 @@ def main():
     # MAIN LOOP
     #
     while True:
-        mousePos = win32api.GetCursorPos()
-
         nextCommand = queue.get()
 
         # In this case the queue is empty
         if nextCommand is None:
             continue
+
+        mousePos = win32api.GetCursorPos()
 
         func = commands.get( nextCommand )
         if func is not None:
@@ -123,7 +136,7 @@ def main():
 
 # Worker function for IRC thread
 def ircTarget( q, c, db ):
-    logging.info( "IRC thread started." )
+    logger.info( "IRC thread started." )
 
     oauth = "oauth:sbjibtan4na5bulm0bxuflonrfko14"
 
@@ -132,7 +145,7 @@ def ircTarget( q, c, db ):
     try:
         bot.connect( "irc.chat.twitch.tv", 6667, "twitchmakesart_channel", password = oauth )
     except irc.client.ServerConnectionError:
-        logging.exception( "Connection to IRC server failed." )
+        logger.exception( "Connection to IRC server failed." )
         db.close()
         sys.exit( 1 )
 
@@ -140,13 +153,12 @@ def ircTarget( q, c, db ):
 
 
 def paintTarget():
-    logging.info( "Paint thread started." )
+    logger.info( "Paint thread started." )
 
     paintHandle = win32gui.FindWindow( None, "Untitled - Paint" )
 
     if paintHandle == 0:
-        logging.error( "Paint.exe doesn't seem to be running" )
-        thread
+        logger.error( "Paint.exe doesn't seem to be running" )
 
     while True:
         win32gui.SetForegroundWindow( paintHandle )
