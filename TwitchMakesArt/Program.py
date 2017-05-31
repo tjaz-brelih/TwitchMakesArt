@@ -47,6 +47,7 @@ def main():
     # LOGGING
     #
     logging.basicConfig( filename = "logs\\twitchmakesart_" + today + ".log", level = logging.INFO, format = "%(asctime)s [%(levelname)s] %(message)s" )
+    #logging.basicConfig( level = logging.INFO, format = "%(asctime)s [%(levelname)s] %(message)s" )
     logging.info( "Application started." )
     
 
@@ -61,6 +62,7 @@ def main():
         cur.execute( "CREATE TABLE users (username, command)" )
         db.commit()
     except sqlite3.OperationalError:
+        # Table 'users' already exists
         pass
     except Exception:
         logging.exception( "Exception while creating database table." )
@@ -148,8 +150,9 @@ def paintTarget():
         os._exit( 1 )
 
     while True:
+        win32gui.ShowWindow( paintHandle, win32con.SW_MAXIMIZE )
         win32gui.SetForegroundWindow( paintHandle )
-        sleep( 1 )
+        sleep( 2 )
 
 
 
