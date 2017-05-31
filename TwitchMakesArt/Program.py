@@ -46,22 +46,8 @@ def main():
     #
     # LOGGING
     #
-    logger = logging.getLogger()
-    logger.setLevel( logging.DEBUG )
-
-    formatter = logging.Formatter( "%(asctime)s [%(levelname)s] %(message)s" )
-
-    fh = logging.FileHandler( "logs\\twitchmakesart_" + today + ".log" )
-    fh.setLevel( logging.INFO )
-    fh.setFormatter( formatter )
-    logger.addHandler( fh )
-
-    sh = logging.StreamHandler()
-    sh.setLevel( logging.INFO )
-    sh.setFormatter( formatter )
-    logger.addHandler( sh )
-
-    logger.info( "Application started." )
+    logging.basicConfig( filename = "logs\\twitchmakesart_" + today + ".log", level = logging.INFO, format = "%(asctime)s [%(levelname)s] %(message)s" )
+    logging.info( "Application started." )
     
 
     #
@@ -77,8 +63,8 @@ def main():
     except sqlite3.OperationalError:
         pass
     except Exception:
-        logger.exception( "Exception while creating database table." )
-        sys.exit( 1 )
+        logging.exception( "Exception while creating database table." )
+        os._exit( 1 )
 
     
     #
@@ -136,7 +122,7 @@ def main():
 
 # Worker function for IRC thread
 def ircTarget( q, c, db ):
-    logger.info( "IRC thread started." )
+    logging.info( "IRC thread started." )
 
     oauth = "oauth:sbjibtan4na5bulm0bxuflonrfko14"
 
@@ -145,20 +131,21 @@ def ircTarget( q, c, db ):
     try:
         bot.connect( "irc.chat.twitch.tv", 6667, "twitchmakesart_channel", password = oauth )
     except irc.client.ServerConnectionError:
-        logger.exception( "Connection to IRC server failed." )
+        logging.exception( "Connection to IRC server failed." )
         db.close()
-        sys.exit( 1 )
+        os._exit( 1 )
 
     bot.start()
 
 
 def paintTarget():
-    logger.info( "Paint thread started." )
+    logging.info( "Paint thread started." )
 
     paintHandle = win32gui.FindWindow( None, "Untitled - Paint" )
 
     if paintHandle == 0:
-        logger.error( "Paint.exe doesn't seem to be running" )
+        logging.error( "Paint.exe doesn't seem to be running" )
+        os._exit( 1 )
 
     while True:
         win32gui.SetForegroundWindow( paintHandle )

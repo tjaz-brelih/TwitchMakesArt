@@ -13,12 +13,12 @@ class IRCBot( irc.client.SimpleIRCClient ):
 
 
     def on_welcome( self, connection, event ):
-        logger.info( "Connected to IRC server" )
+        logging.info( "Connected to IRC server" )
         connection.join( self.channel )
 
 
     def on_join( self, connection, event ):
-        logger.info( "Connected to IRC channel." )
+        logging.info( "Connected to IRC channel." )
 
 
     def on_pubmsg( self, connection, event ):
