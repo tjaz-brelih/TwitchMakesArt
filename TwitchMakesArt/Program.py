@@ -46,40 +46,22 @@ def main():
     #
     # LOGGING
     #
-    logging.basicConfig( filename = "logs\\twitchmakesart_" + today + ".log", level = logging.INFO, format = "%(asctime)s [%(levelname)s] %(message)s" )
+    logging.basicConfig( filename = "logs\\twitchmakesart_" + today + ".log", level = logging.DEBUG, format = "%(asctime)s [%(levelname)s] %(message)s" )
     #logging.basicConfig( level = logging.INFO, format = "%(asctime)s [%(levelname)s] %(message)s" )
     logging.info( "Application started." )
     
-
-    #
-    # DATABASE
-    #
-    # For storing users who sent valid commands.
-    db = sqlite3.connect( "logs\\users_" + today + ".db" )
-    cur = db.cursor()
-
-    try:
-        cur.execute( "CREATE TABLE users (username, command)" )
-        db.commit()
-    except sqlite3.OperationalError:
-        # Table 'users' already exists
-        pass
-    except Exception:
-        logging.exception( "Exception while creating database table." )
-        os._exit( 1 )
-
     
     #
     # THREADING
     #
     # We create a new thread dedicated to reading the Twitch chat and adding commands to the queue.
-    threadIrc = Thread( target = ircTarget, args=(queue, commands, db) )
+    threadIrc = Thread( target = ircTarget, args=(queue, commands) )
     threadIrc.daemon = True
     threadIrc.start()
 
     threadPaint = Thread( target = paintTarget )
     threadPaint.daemon = True
-    threadPaint.start()
+    #threadPaint.start()
 
 
     #
@@ -91,6 +73,8 @@ def main():
         # In this case the queue is empty
         if nextCommand is None:
             continue
+
+        logging.debug( "Next command: " + nextCommand )
 
         mousePos = win32api.GetCursorPos()
 
@@ -123,8 +107,27 @@ def main():
 
 
 # Worker function for IRC thread
-def ircTarget( q, c, db ):
+def ircTarget( q, c ):
     logging.info( "IRC thread started." )
+    today = datetime.today().strftime( "%Y-%m-%d" )
+    
+    #
+    # DATABASE
+    #
+    # For storing users who sent valid commands.
+    db = sqlite3.connect( "logs\\users_" + today + ".db" )
+    cur = db.cursor()
+
+    try:
+        cur.execute( "CREATE TABLE users (username, command)" )
+        db.commit()
+    except sqlite3.OperationalError:
+        # Table 'users' already exists
+        pass
+    except Exception:
+        logging.exception( "Exception while creating database table." )
+        os._exit( 1 )
+
 
     oauth = "oauth:sbjibtan4na5bulm0bxuflonrfko14"
 

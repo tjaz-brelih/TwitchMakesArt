@@ -25,14 +25,16 @@ class IRCBot( irc.client.SimpleIRCClient ):
         user = event.source.nick
         message = event.arguments[0]
         
-        #print( user, message )
+        logging.debug( user + ": " + message )
 
         # Filtering input
-        message.lower()
+        message = message.lower()
         message = "".join( filter( str.isalpha, message ) )
 
         if self.commands.get( message ) is not None:
             if self.queue.add( message ):
+                logging.debug( "Added to queue: " + message )
+
                 cur = self.db.cursor()
                 cur.execute( "INSERT INTO users VALUES (?,?)", (user, message) )
                 self.db.commit()
