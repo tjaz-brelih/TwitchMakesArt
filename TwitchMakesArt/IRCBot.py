@@ -20,6 +20,10 @@ class IRCBot( irc.client.SimpleIRCClient ):
     def on_join( self, connection, event ):
         logging.info( "Connected to IRC channel." )
 
+    def on_disconnect( self, connection, event ):
+        self.connect( "irc.chat.twitch.tv", 6667, "twitchmakesart_channel", password = oauth )
+        self.start()
+
 
     def on_pubmsg( self, connection, event ):
         user = event.source.nick
