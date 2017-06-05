@@ -46,8 +46,8 @@ def main():
     #
     # LOGGING
     #
-    logging.basicConfig( filename = "logs\\twitchmakesart_" + today + ".log", level = logging.DEBUG, format = "%(asctime)s [%(levelname)s] %(message)s" )
-    #logging.basicConfig( level = logging.INFO, format = "%(asctime)s [%(levelname)s] %(message)s" )
+    #logging.basicConfig( filename = "logs\\twitchmakesart_" + today + ".log", level = logging.DEBUG, format = "%(asctime)s [%(levelname)s] %(message)s" )
+    logging.basicConfig( level = logging.DEBUG, format = "%(asctime)s [%(levelname)s] %(message)s" )
     logging.info( "Application started." )
     
     
@@ -130,17 +130,19 @@ def ircTarget( q, c ):
 
 
     oauth = "oauth:sbjibtan4na5bulm0bxuflonrfko14"
+    
+    while True:
 
-    bot = IRCBot( "#twitchmakesart_channel", q, c, db )
+        bot = IRCBot( "#twitchmakesart_channel", q, c, db, oauth )
 
-    try:
-        bot.connect( "irc.chat.twitch.tv", 6667, "twitchmakesart_channel", password = oauth )
-    except irc.client.ServerConnectionError:
-        logging.exception( "Connection to IRC server failed." )
-        db.close()
-        os._exit( 1 )
+        try:
+            bot.connect( "irc.chat.twitch.tv", 6667, "twitchmakesart_channel", password = oauth )
+        except irc.client.ServerConnectionError:
+            logging.exception( "Connection to IRC server failed." )
+            db.close()
+            os._exit( 1 )
 
-    bot.start()
+        bot.start()
 
 
 def paintTarget():

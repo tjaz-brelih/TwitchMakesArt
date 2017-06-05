@@ -3,13 +3,14 @@ import logging
 
 class IRCBot( irc.client.SimpleIRCClient ):
 
-    def __init__( self, channel, queue, commands, db ):
+    def __init__( self, channel, queue, commands, db, password ):
         irc.client.SimpleIRCClient.__init__( self )
 
         self.channel = channel
         self.queue = queue
         self.commands = commands
         self.db = db
+        self.password = password
 
 
     def on_welcome( self, connection, event ):
@@ -21,7 +22,7 @@ class IRCBot( irc.client.SimpleIRCClient ):
         logging.info( "Connected to IRC channel." )
 
     def on_disconnect( self, connection, event ):
-        self.connect( "irc.chat.twitch.tv", 6667, "twitchmakesart_channel", password = oauth )
+        self.connect( "irc.chat.twitch.tv", 6667, "twitchmakesart_channel", password = self.password )
         self.start()
 
 
