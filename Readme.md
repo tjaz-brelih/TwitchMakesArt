@@ -1,4 +1,4 @@
-# Twitch Makes Art
+# Twitch Makes Art (https://github.com/tjaz-brelih/TwitchMakesArt)
 
 ## Sestavni deli
 
